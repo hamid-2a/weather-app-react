@@ -19,36 +19,78 @@ class App extends Component {
     this.state = {
       data: [],
       city: "",
-      country: "",
       sys: [],
-      coord: [],
       main: [],
-      wind: []
+      wind: [],
+      weather: [],
+      time: {
+        hour: "",
+        minute: "",
+        second: ""
+      },
+      date: {
+        day: "",
+        month: "",
+        year: ""
+      }
     }
 
-    this.getData = this.getData.bind(this);
   }
 
   componentDidMount() {
+    console.log("component mounted")
     this.getData();
+    console.log("getData invoked")
+    this.getTime();
   }
 
-  async getData(city = "yazd") {
+  getTime = () => {
+    setInterval(
+      () => {
+        var now;
+        now = new Date();
+        this.setState({
+          time: {
+            hour: now.getHours() < 10 ? "0" + now.getHours() : now.getHours(),
+            minute: now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes(),
+            second: now.getSeconds() < 10 ? "0" + now.getSeconds() : now.getSeconds()
+          },
+          date: {
+            day: now.getDate(),
+            month: now.toLocaleString('default', { month: 'long' }),
+            year: now.getFullYear()
+          }
+        })
+      },
+      1000
+    )
+  }
+
+  getData = async (city = "yazd") => {
     const apiKey = "8a97c3b8e3b9989c1d854dd1092eb7c6";
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
     const response = await fetch(url);
     const result = await response.json();
-    console.log("here " + result.sys.country)
+    console.log("setState invoked");
     this.setState({
       city: city,
-      temp: result.sys,
-      data: result
+      data: result,
+      sys: result.sys,
+      main: result.main,
+      wind: result.wind,
+      weather: result.weather
     });
-    console.log(this.state.data);
+    console.log("setState done");
+    console.log(result);
+    // console.log(this.state.data);
+    console.log("fetch done");
   }
 
+
   render() {
-    const { data } = this.state;
+    console.log("render invoked")
+    console.log(this.state.data)
+    const { data, time, date } = this.state;
     return (
       <div className="App">
         <div className="container">
@@ -57,16 +99,22 @@ class App extends Component {
             <div className="informations">
               <h1 className="city">
                 <span>{data.name}, </span>
-                <span></span>
+                <span>{this.state.sys.country}</span>
               </h1>
 
-              <h4 className="time">20:45:18</h4>
+              <h4 className="time">{time.hour + " : " + time.minute + " : " + time.second}</h4>
 
-              <h4 className="date">September 25, 2015</h4>
+              <h4 className="date">{date.month + " " + date.day + " - " + date.year}</h4>
 
               <div className="weather-condition">
-                <img className="weather-image" src={cloud1} alt="weather" />
-                <span>cloudy</span>
+                <img className="weather-image" src={
+                  data.weather ? `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` : cloud1
+                } alt="weather" />
+                <span>
+                  {
+                    data.weather ? data.weather[0].description : ""
+                  }
+                </span>
               </div>
             </div>
 
@@ -74,14 +122,14 @@ class App extends Component {
               <div className="temperature-container">
                 <div className="lowest">
                   <img className="arrow" src={downArrow} alt="arrow" />
-                  <span>19&#176;</span>
+                  <span>{Math.floor(this.state.main.temp_min)}&#176;</span>
                 </div>
 
-                <span className="temperature">35 C&#176;
+                <span className="temperature">{Math.floor(this.state.main.temp)} C&#176;
                 </span>
 
                 <div className="highest">
-                  <span>34&#176;</span>
+                  <span>{Math.floor(this.state.main.temp_max)}&#176;</span>
                   <img className="arrow" src={upArrow} alt="arrow" />
                 </div>
               </div>
@@ -89,12 +137,12 @@ class App extends Component {
               <div className="weather-parameters">
                 <div className="wind">
                   <img src={windIcon} alt="icon" />
-                  <span>108 m/s</span>
+                  <span>{this.state.wind.speed} m/s</span>
                 </div>
 
                 <div className="humidity">
                   <img src={humidityIcon} alt="icon" />
-                  <span>14 %</span>
+                  <span>{this.state.main.humidity} %</span>
                 </div>
               </div>
             </div>
