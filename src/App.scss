@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+$white: #e6e6e6;
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+}
+
+.App {
+    width: 100%;
+    height: 100vh;
+    background-image: url("./assets/earth.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: $white;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template: 65% 1fr / 60% 1fr;
+    backdrop-filter: blur(7px);
+
+    .current-weather {
+        grid-area: 1/1/2/2;
+        display: grid;
+        grid-template: 70% 1fr/ 60% 1fr;
+        padding: 20px;
+
+        .informations {
+            grid-area: 1/1/2/2;
+
+            .city {
+                font-weight: 300;
+                font-size: 2.6rem;
+            }
+            .time{
+                font-weight: 200;
+                font-size: 2.5rem;
+                margin-top: 10px;
+            }
+            .date{
+                font-weight: 300;
+            }
+            .weather-condition {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                overflow: hidden;
+
+                img {
+                    width: 200px;
+                    max-height: 140px;
+                }
+                span{
+                    margin: auto;
+                    font-weight: 300;
+                    font-size: 2rem;
+                }
+            }
+        }
+
+        .details{
+            grid-area: 1/2/2/3;
+
+            .temperature-container{
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                margin-top: 50px;
+
+                .temperature{
+                    font-size: 5.7rem;
+                    font-weight: 300;
+                }
+
+                .lowest, .highest{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    span{
+                        font-weight: 300;
+                        font-size: 20px;
+                    }
+                    .arrow{
+                        width: 18px;
+                    }
+                }
+            }
+            
+            .weather-parameters{
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                margin-top: 30px;
+
+                .wind, .humidity{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    img{
+                        width: 40px;
+                    }
+                    span{
+                        margin-left: 7px;
+                        font-size: 1.2rem;
+                    }
+                }
+            }
+        }
+
+        .hour-forecast{
+            grid-area: 2/1/3/3;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid #c2c2c2b9;
+        }
+    }
+
+    .search {
+        grid-area: 1/2/2/3;
+        padding: 20px;
+
+        .search-box{
+
+            .search-input{
+                background-color: transparent;
+                width: 250px;
+                height: 30px;
+                border: 1px solid #e6e6e6;
+                border-radius: 6px;
+                padding: 5px;
+                color: #e6e6e6;
+                letter-spacing: 1px;
+
+                &::placeholder{
+                    color: #e6e6e6;
+                }
+            }
+
+            button{
+                margin-left: 10px;
+                width: 70px;
+                height: 30px;
+                background-color: transparent;
+                border: 1px solid #e6e6e6;
+                border-radius: 6px;
+                color: inherit;
+                cursor: pointer;
+                transition: all 0.3s;
+
+                &:hover{
+                    background-color: #e6e6e6;
+                    color: #000;
+                }
+            }
+        }
+    }
+
+    .forecast-weather {
+        grid-area: 2/1/3/3;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+}

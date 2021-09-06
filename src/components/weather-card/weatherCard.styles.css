@@ -1,0 +1,61 @@
+.small-card {
+  width: 150px;
+  text-align: center;
+  border: 1px solid #e6e6e67e;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+.small-card:hover {
+  border-color: #e6e6e6;
+  border: 2px solid #e6e6e67e;
+  transform: scale(1.1);
+  margin: auto 5px;
+}
+
+.small-card .hour {
+  margin: 5px auto;
+  font-weight: 300;
+}
+
+.small-card img {
+  width: 50px;
+}
+
+.small-card .temperature {
+  font-size: 1.3rem;
+  font-weight: 300;
+}
+
+.big-card {
+  width: 180px;
+  height: 200px;
+  text-align: center;
+  border: 1px solid #e6e6e67e;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+
+.big-card:hover {
+  border-color: #e6e6e6;
+  margin: auto 5px;
+  border: 3px solid #e6e6e67e;
+  transform: scale(1.1);
+}
+
+.big-card .hour {
+  margin: 20px auto;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+
+.big-card img {
+  width: 50px;
+}
+
+.big-card .temperature {
+  margin-top: 20px;
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+/*# sourceMappingURL=weatherCard.styles.css.map */
