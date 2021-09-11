@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import cloud from "./assets/cloud.png";
 import Loading from "./assets/loading.svg";
 import upArrow from "./assets/up-arrow.png";
 import downArrow from "./assets/down-arrow.png";
 import windIcon from "./assets/wind.png";
 import humidityIcon from "./assets/humidity.png";
 import WeatherCard from './components/weather-card/weatherCard.component';
-import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
 import i02d from "./assets/icons/i02d.png";
 /*
@@ -39,12 +37,7 @@ class App extends Component {
       data: [],
       city: "",
       searchedInput: [],
-      searchedCities: [
-        "semnan",
-        "tehran",
-        "Yazd",
-        "Isfahan"
-      ],
+      searchedCities: [],
       forecastData: [],
       forecastHours: [],
       forecastDays: [],
@@ -63,15 +56,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log("component mounted")
 
-    console.log("getTime invoked")
     //this.getTime();
 
-    console.log("getData invoked")
     this.getData();
 
-    console.log("getForecastData invoked")
     this.getForecastData()
   }
 
@@ -102,15 +91,11 @@ class App extends Component {
     const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
     const response = await fetch(url);
     const result = await response.json();
-    console.log("setState invoked");
     this.setState({
       city: city,
       data: result
     });
-    console.log("setState done");
     console.log(result);
-    // console.log(this.state.data);
-    console.log("fetch done");
   }
 
   getForecastData = async (city = "tehran") => {
@@ -135,14 +120,37 @@ class App extends Component {
       forecastHours: forecastHours,
       forecastDays: forecastDays
     });
-    console.log(this.state.forecastData)
-    console.log(this.state.forecastHours)
-    console.log(this.state.forecastDays)
+  }
+
+  listCities = async (search) => {
+    const requestOptions = {
+      method: 'GET',
+    };
+
+    const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?text=${search}&apiKey=14e150bfa7b940bfb68cc86558db0e26`, requestOptions);
+    const result = await response.json();
+    console.log(result)
+
+    let cities = [];
+    if (result.features !== undefined) {
+      result.features.map(item => {
+        cities = [];
+
+        if (cities.indexOf(item.properties.city) !== -1 || item.properties.city === undefined) {
+          return ""
+        }
+        else {
+          cities.push(item.properties.city + ", " + item.properties.country)
+        }
+      })
+    }
+
+    this.setState({ searchedCities: cities })
   }
 
 
   render() {
-    console.log("render invoked")
+    console.log(this.state.searchedCities)
     const { data, forecastData, time, date } = this.state;
     if (!this.state.data.sys) {
       return (
@@ -226,7 +234,25 @@ class App extends Component {
           <div className="search">
 
             <div className="search-box">
-              <input className="search-input" id="search" type="text" placeholder="Search City" />
+              <input className="search-input" id="search" type="text" placeholder="Search City"
+                onChange={e => {
+                  this.setState({ searchedInput: e.target.value })
+                  this.listCities(e.target.value)
+                }} />
+              {
+                this.state.searchedCities && (
+                  <div className="options">
+                    {
+                      this.state.searchedCities.map(city => <div className="option" key={city}
+                        onClick={() => document.getElementById("search").value = city}
+                      >
+                        {city}
+                      </div>)
+                    }
+                  </div>
+                )
+              }
+
               <button type="submit"
                 onClick={() => {
                   this.getData(document.getElementById("search").value)
@@ -235,7 +261,7 @@ class App extends Component {
                 Search</button>
             </div>
 
-            
+
           </div>
 
           <div className="forecast-weather">
@@ -251,7 +277,7 @@ class App extends Component {
             }
           </div>
         </div>
-      </div>
+      </div >
     );
   }
 }

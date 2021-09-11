@@ -150,16 +150,34 @@
   padding: 5px;
   color: #e6e6e6;
   letter-spacing: 1px;
+  position: relative;
 }
 
 .container .search .search-box .search-input::placeholder {
   color: #e6e6e6;
 }
 
-.container .search .search-box .search-suggests {
-  background-color: sienna;
+.container .search .search-box .options {
   width: 250px;
-  display: inline-block;
+  position: absolute;
+  z-index: 3;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.container .search .search-box .options .option {
+  padding: 8px;
+  border-top: 1px solid #e6e6e6;
+  cursor: pointer;
+  overflow-x: hidden;
+  transition: all 0.2s;
+}
+
+.container .search .search-box .options .option:hover {
+  background-color: #e6e6e663;
+  padding-left: 15px;
 }
 
 .container .search .search-box button {
