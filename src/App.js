@@ -2,15 +2,34 @@ import React, { Component } from 'react';
 import './App.css';
 
 import cloud from "./assets/cloud.png";
-import cloud1 from "./assets/cloud1.png";
-
-
+import Loading from "./assets/loading.svg";
 import upArrow from "./assets/up-arrow.png";
 import downArrow from "./assets/down-arrow.png";
 import windIcon from "./assets/wind.png";
 import humidityIcon from "./assets/humidity.png";
 import WeatherCard from './components/weather-card/weatherCard.component';
+import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 
+import i02d from "./assets/icons/i02d.png";
+/*
+import i01d from "./assets/icons/i01d.png";
+import i02d from "./assets/icons/i02d.png";
+import i02n from "./assets/icons/i02n.png";
+import i03d from "./assets/icons/i03d.png";
+import i03n from "./assets/icons/i03n.png";
+import i04d from "./assets/icons/i04d.png";
+import i04n from "./assets/icons/i04n.png";
+import i09d from "./assets/icons/i09d.png";
+import i09n from "./assets/icons/i09n.png";
+import i10d from "./assets/icons/i10d.png";
+import i10n from "./assets/icons/i10n.png";
+import i11d from "./assets/icons/i11d.png";
+import i11n from "./assets/icons/i11n.png";
+import i13d from "./assets/icons/i13d.png";
+import i13n from "./assets/icons/i13n.png";
+import i50d from "./assets/icons/i50d.png";
+import i50n from "./assets/icons/i50n.png";
+*/
 
 class App extends Component {
   constructor(props) {
@@ -19,10 +38,16 @@ class App extends Component {
     this.state = {
       data: [],
       city: "",
-      sys: [],
-      main: [],
-      wind: [],
-      weather: [],
+      searchedInput: [],
+      searchedCities: [
+        "semnan",
+        "tehran",
+        "Yazd",
+        "Isfahan"
+      ],
+      forecastData: [],
+      forecastHours: [],
+      forecastDays: [],
       time: {
         hour: "",
         minute: "",
@@ -39,9 +64,15 @@ class App extends Component {
 
   componentDidMount() {
     console.log("component mounted")
-    this.getData();
+
+    console.log("getTime invoked")
+    //this.getTime();
+
     console.log("getData invoked")
-    this.getTime();
+    this.getData();
+
+    console.log("getForecastData invoked")
+    this.getForecastData()
   }
 
   getTime = () => {
@@ -66,7 +97,7 @@ class App extends Component {
     )
   }
 
-  getData = async (city = "yazd") => {
+  getData = async (city = "tehran") => {
     const apiKey = "8a97c3b8e3b9989c1d854dd1092eb7c6";
     const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
     const response = await fetch(url);
@@ -74,11 +105,7 @@ class App extends Component {
     console.log("setState invoked");
     this.setState({
       city: city,
-      data: result,
-      sys: result.sys,
-      main: result.main,
-      wind: result.wind,
-      weather: result.weather
+      data: result
     });
     console.log("setState done");
     console.log(result);
@@ -86,20 +113,52 @@ class App extends Component {
     console.log("fetch done");
   }
 
+  getForecastData = async (city = "tehran") => {
+    const apiKey = "8a97c3b8e3b9989c1d854dd1092eb7c6";
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&cnt=40&appid=${apiKey}&units=metric`;
+    const response = await fetch(forecastUrl);
+    const result = await response.json();
+
+    const forecastHours = [];
+    for (let i = 1; i < 6; i++) {
+      forecastHours.push(result.list[i])
+    }
+
+    const forecastDays = [];
+    for (let j = 0; j <= result.list.length; j = j + 7) {
+      forecastDays.push(result.list[j])
+    }
+    forecastDays.shift();
+
+    this.setState({
+      forecastData: result,
+      forecastHours: forecastHours,
+      forecastDays: forecastDays
+    });
+    console.log(this.state.forecastData)
+    console.log(this.state.forecastHours)
+    console.log(this.state.forecastDays)
+  }
+
 
   render() {
     console.log("render invoked")
-    console.log(this.state.data)
-    const { data, time, date } = this.state;
+    const { data, forecastData, time, date } = this.state;
+    if (!this.state.data.sys) {
+      return (
+        <img src={Loading} alt="loading" />
+      )
+    }
     return (
       <div className="App">
         <div className="container">
 
           <div className="current-weather">
+
             <div className="informations">
               <h1 className="city">
                 <span>{data.name}, </span>
-                <span>{this.state.sys.country}</span>
+                <span>{data.sys.country}</span>
               </h1>
 
               <h4 className="time">{time.hour + " : " + time.minute + " : " + time.second}</h4>
@@ -107,12 +166,10 @@ class App extends Component {
               <h4 className="date">{date.month + " " + date.day + " - " + date.year}</h4>
 
               <div className="weather-condition">
-                <img className="weather-image" src={
-                  data.weather ? `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` : cloud1
-                } alt="weather" />
+                <img className="weather-image" src={i02d} alt="weather" />
                 <span>
                   {
-                    data.weather ? data.weather[0].description : ""
+                    data.weather[0].description
                   }
                 </span>
               </div>
@@ -122,14 +179,14 @@ class App extends Component {
               <div className="temperature-container">
                 <div className="lowest">
                   <img className="arrow" src={downArrow} alt="arrow" />
-                  <span>{Math.floor(this.state.main.temp_min)}&#176;</span>
+                  <span>{Math.floor(data.main.temp_min)}&#176;</span>
                 </div>
 
-                <span className="temperature">{Math.floor(this.state.main.temp)} C&#176;
+                <span className="temperature">{Math.floor(data.main.temp)} C&#176;
                 </span>
 
                 <div className="highest">
-                  <span>{Math.floor(this.state.main.temp_max)}&#176;</span>
+                  <span>{Math.floor(data.main.temp_max)}&#176;</span>
                   <img className="arrow" src={upArrow} alt="arrow" />
                 </div>
               </div>
@@ -137,42 +194,61 @@ class App extends Component {
               <div className="weather-parameters">
                 <div className="wind">
                   <img src={windIcon} alt="icon" />
-                  <span>{this.state.wind.speed} m/s</span>
+                  <span>{data.wind.speed} m/s</span>
                 </div>
 
                 <div className="humidity">
                   <img src={humidityIcon} alt="icon" />
-                  <span>{this.state.main.humidity} %</span>
+                  <span>{data.main.humidity} %</span>
                 </div>
               </div>
             </div>
 
-            <div className="hour-forecast">
-              <WeatherCard cardClass="small-card" hour="14 PM" image={cloud} temperature="56" />
-              <WeatherCard cardClass="small-card" hour="14 PM" image={cloud} temperature="56" />
-              <WeatherCard cardClass="small-card" hour="14 PM" image={cloud} temperature="56" />
-              <WeatherCard cardClass="small-card" hour="14 PM" image={cloud} temperature="56" />
-              <WeatherCard cardClass="small-card" hour="14 PM" image={cloud} temperature="56" />
-            </div>
+            {
+              !forecastData.list ? <img className="loading-img" src={Loading} alt="loading" /> :
+                <div className="hour-forecast">
+                  {
+                    this.state.forecastHours.map(item => (
+                      <WeatherCard
+                        key={item.dt}
+                        cardClass="small-card"
+                        hour={parseInt(item.dt_txt.slice(11, 13))}
+                        image={`http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
+                        description={item.weather[0].description}
+                        temperature={Math.floor(item.main.temp)}
+                      />
+                    ))
+                  }
+                </div>
+            }
           </div>
 
           <div className="search">
+
             <div className="search-box">
               <input className="search-input" id="search" type="text" placeholder="Search City" />
               <button type="submit"
-                onClick={() => this.getData(document.getElementById("search").value)}>
+                onClick={() => {
+                  this.getData(document.getElementById("search").value)
+                  this.getForecastData(document.getElementById("search").value)
+                }}>
                 Search</button>
             </div>
+
+            
           </div>
 
           <div className="forecast-weather">
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
-            <WeatherCard cardClass="big-card" hour="Tuesday" image={cloud} temperature="27" />
+            {
+              this.state.forecastDays.map(item => (
+                <WeatherCard
+                  key={item.dt}
+                  cardClass="big-card"
+                  day={item.dt_txt}
+                  image={i02d}
+                  temperature={Math.floor(item.main.temp)} />
+              ))
+            }
           </div>
         </div>
       </div>

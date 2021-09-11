@@ -22,13 +22,18 @@
   width: 50px;
 }
 
+.small-card .description {
+  margin: 5px auto;
+}
+
 .small-card .temperature {
   font-size: 1.3rem;
   font-weight: 300;
+  margin: 5px auto;
 }
 
 .big-card {
-  width: 180px;
+  width: 250px;
   height: 200px;
   text-align: center;
   border: 1px solid #e6e6e67e;
@@ -43,7 +48,7 @@
   transform: scale(1.1);
 }
 
-.big-card .hour {
+.big-card .day {
   margin: 20px auto;
   font-weight: 400;
   font-size: 1.2rem;
